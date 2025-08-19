@@ -1,12 +1,37 @@
-# React + Vite
+Dev Toolkit
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+    A collection of essential web development tools built to boost your productivity.
 
-Currently, two official plugins are available:
+About the Project
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Dev Toolkit is an open-source web application that provides a suite of practical tools for developers. Instead of juggling multiple browser tabs or single-purpose apps, you can use this platform to quickly perform common tasks such as formatting JSON, converting text cases, and encoding/decoding Base64.
 
-## Expanding the ESLint configuration
+The goal is to provide a clean, fast, and reliable set of tools that streamline your workflow and save you time.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Key Features
+
+    JSON Formatter & Validator: Instantly format unreadable JSON and validate its syntax.
+
+    Base64 Encoder/Decoder: Quickly encode text to Base64 or decode Base64 strings.
+
+    Text Case Converter: Convert text to various cases like camelCase, PascalCase, snake_case, and kebab-case.
+
+    URL Encoder/Decoder: Handle special characters in URLs with ease.
+
+Technologies Used
+
+    Frontend:
+
+        React: For building the user interface.
+
+        Next.js: The React framework for server-side rendering and static site generation.
+
+        Tailwind CSS: For fast and efficient styling.
+
+        Radix UI: For accessible and unstyled UI components.
+
+        Vercel: For deployment.
+
+    Libraries:
+
+        js-beautify: Used for formatting code, including JSON.
