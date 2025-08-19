@@ -42,7 +42,7 @@ const RegexTester = () => {
                 {['g', 'i', 'm'].map(flag => (
                     <label key={flag} className="flex items-center space-x-2 cursor-pointer">
                         <input type="checkbox" checked={flags[flag]} onChange={() => handleFlagChange(flag)} className="h-4 w-4 rounded text-indigo-600 focus:ring-indigo-500" />
-                        <span className="font-mono">{flag}</span>
+                        <span className="font-mono text-gray-700 dark:text-gray-300">{flag}</span>
                     </label>
                 ))}
             </div>
