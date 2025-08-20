@@ -1,12 +1,14 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { usePersistentState } from '../hooks/usePersistentState';
-import { ToolTextarea } from './common';
+import { ToolTextarea, LoadingSpinner } from './common';
 
 const RegexTester = () => {
     const [pattern, setPattern] = usePersistentState('regex-pattern', '\\b[A-Z]+\\b');
     const [testString, setTestString] = usePersistentState('regex-test-string', 'The QUICK brown FOX jumps over the LAZY dog.');
     const [flags, setFlags] = usePersistentState('regex-flags', { g: true, i: false, m: false });
     const [error, setError] = useState('');
+    const [prompt, setPrompt] = usePersistentState('regex-prompt', 'match all uppercase words');
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleFlagChange = (flag) => {
         setFlags(prev => ({ ...prev, [flag]: !prev[flag] }));
@@ -16,6 +18,38 @@ const RegexTester = () => {
         setPattern('');
         setTestString('');
         setError('');
+    };
+    
+    const handleGenerateRegex = async () => {
+        if (!prompt) return;
+        setIsLoading(true);
+        setError('');
+        try {
+            const fullPrompt = `From the following description, generate ONLY the JavaScript regular expression pattern and nothing else. Do not include the slashes: ${prompt}`;
+            let chatHistory = [{ role: "user", parts: [{ text: fullPrompt }] }];
+            const payload = { contents: chatHistory };
+            const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error(`API request failed with status ${response.status}`);
+            }
+
+            const result = await response.json();
+            const text = result.candidates[0].content.parts[0].text.trim();
+            setPattern(text);
+
+        } catch (e) {
+            setError(`AI generation failed: ${e.message}`);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const matchCount = useMemo(() => {
@@ -33,6 +67,18 @@ const RegexTester = () => {
     
     return (
         <div className="h-full flex flex-col space-y-4">
+            <div className="flex-shrink-0 flex flex-col sm:flex-row gap-2">
+                <input 
+                    type="text"
+                    value={prompt}
+                    onChange={e => setPrompt(e.target.value)}
+                    placeholder="Describe the regex you want..."
+                    className="w-full flex-grow bg-white dark:bg-gray-800 border border-slate-300 dark:border-gray-700 rounded-md p-2 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+                <button onClick={handleGenerateRegex} disabled={isLoading} className="flex items-center justify-center bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md transition-colors disabled:bg-purple-400">
+                    {isLoading ? <LoadingSpinner /> : '✨ Generate Regex'}
+                </button>
+            </div>
             <div className="flex-shrink-0">
                 <label className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2 block">Regular Expression</label>
                 <input type="text" value={pattern} onChange={e => setPattern(e.target.value)} placeholder="e.g., \b[A-Z]+\b" className="w-full font-mono bg-white dark:bg-gray-800 border border-slate-300 dark:border-gray-700 rounded-md p-3 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
@@ -42,7 +88,7 @@ const RegexTester = () => {
                 {['g', 'i', 'm'].map(flag => (
                     <label key={flag} className="flex items-center space-x-2 cursor-pointer">
                         <input type="checkbox" checked={flags[flag]} onChange={() => handleFlagChange(flag)} className="h-4 w-4 rounded text-indigo-600 focus:ring-indigo-500" />
-                        <span className="font-mono">{flag}</span>
+                        <span className="font-mono text-gray-700 dark:text-gray-300">{flag}</span>
                     </label>
                 ))}
             </div>
