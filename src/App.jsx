@@ -50,12 +50,12 @@ function App() {
       <div className={`fixed inset-0 z-20 bg-black/50 transition-opacity duration-300 md:hidden ${isSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} onClick={() => setIsSidebarOpen(false)}></div>
       
       {/* Mobile Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-30 w-64 transform transition-transform duration-300 md:hidden ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <div className={`fixed inset-y-0 left-0 z-30 w-5/6 max-w-xs transform transition-transform duration-300 md:hidden ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
           <Sidebar tools={tools} activeToolId={activeToolId} setActiveToolId={setActiveToolId} theme={theme} toggleTheme={toggleTheme} closeSidebar={() => setIsSidebarOpen(false)} />
       </div>
 
       {/* Desktop Sidebar */}
-      <div className="hidden md:flex">
+      <div className="hidden md:flex w-64">
           <Sidebar tools={tools} activeToolId={activeToolId} setActiveToolId={setActiveToolId} theme={theme} toggleTheme={toggleTheme} />
       </div>
 
