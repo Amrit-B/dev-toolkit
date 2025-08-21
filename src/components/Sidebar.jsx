@@ -9,7 +9,7 @@ const Sidebar = ({ tools, activeToolId, setActiveToolId, theme, toggleTheme, clo
     };
 
     return (
-        <aside className="w-64 bg-slate-100 dark:bg-gray-800 p-4 flex flex-col border-r border-slate-200 dark:border-gray-700">
+        <aside className="w-full h-full bg-slate-100 dark:bg-gray-800 p-4 flex flex-col border-r border-slate-200 dark:border-gray-700">
             <h1 
                 className="text-xl font-bold text-gray-800 dark:text-white mb-6 cursor-pointer"
                 onClick={() => handleToolClick('welcome')}
