@@ -45,15 +45,12 @@ const JsonFormatter = () => {
         setError('');
         try {
             const fullPrompt = `Generate a valid JSON object based on the following description. Respond with ONLY the JSON code, without any markdown formatting or extra text: ${prompt}`;
-            let chatHistory = [{ role: "user", parts: [{ text: fullPrompt }] }];
-            const payload = { contents: chatHistory };
-            const apiKey =  import.meta.env.VITE_GEMINI_API_KEY;
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
             
-            const response = await fetch(apiUrl, {
+            // Securely call your Vercel backend route instead of Google directly
+            const response = await fetch('/api/gemini', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify({ prompt: fullPrompt })
             });
 
             if (!response.ok) {
@@ -61,7 +58,7 @@ const JsonFormatter = () => {
             }
 
             const result = await response.json();
-            const text = result.candidates[0].content.parts[0].text;
+            const text = result.candidates?.[0]?.content?.parts?.[0]?.text || '';
             
             const cleanedText = text.replace(/```json/g, '').replace(/```/g, '').trim();
             
