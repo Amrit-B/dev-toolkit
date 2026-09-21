@@ -1,5 +1,4 @@
 export default async function handler(req, res) {
-  // Enforce CORS and JSON content type immediately
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -13,7 +12,6 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Safely parse body for both raw strings and parsed objects
     let body = req.body;
     if (typeof body === 'string') {
       try {
@@ -33,26 +31,19 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'GEMINI_API_KEY is not defined in Vercel settings' });
     }
 
-    // Call Google's API using the secure server-side fetch pattern
-    const apiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
+    const apiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [
-          {
-            parts: [{ text: prompt }]
-          }
-        ]
+        contents: [{ parts: [{ text: prompt }] }]
       })
     });
 
     const data = await apiResponse.json();
 
     if (!apiResponse.ok) {
-      return res.status(apiResponse.status).json({
-        error: data.error?.message || 'Upstream Google API error'
+      return res.status(apiResponse.status).json({ 
+        error: data.error?.message || 'Upstream Google API error' 
       });
     }
 
