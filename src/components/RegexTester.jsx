@@ -21,36 +21,34 @@ const RegexTester = () => {
     };
     
     const handleGenerateRegex = async () => {
-        if (!prompt) return;
-        setIsLoading(true);
-        setError('');
-        try {
-            const fullPrompt = `From the following description, generate ONLY the JavaScript regular expression pattern and nothing else. Do not include the slashes: ${prompt}`;
-            let chatHistory = [{ role: "user", parts: [{ text: fullPrompt }] }];
-            const payload = { contents: chatHistory };
-            const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-            
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            if (!response.ok) {
-                throw new Error(`API request failed with status ${response.status}`);
+            if (!prompt) return;
+            setIsLoading(true);
+            setError('');
+            try {
+                const fullPrompt = `From the following description, generate ONLY the JavaScript regular expression pattern and nothing else. Do not include the slashes: ${prompt}`;
+                
+                // Call your internal Vercel serverless function instead of Google directly
+                const response = await fetch('/api/gemini', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: fullPrompt })
+                });
+    
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+    
+                const result = await response.json();
+                // Adjust parsing depending on how your serverless handler formats the response back
+                const text = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || result.text || '';
+                setPattern(text);
+    
+            } catch (e) {
+                setError(`AI generation failed: ${e.message}`);
+            } finally {
+                setIsLoading(false);
             }
-
-            const result = await response.json();
-            const text = result.candidates[0].content.parts[0].text.trim();
-            setPattern(text);
-
-        } catch (e) {
-            setError(`AI generation failed: ${e.message}`);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+        };
 
     const matchCount = useMemo(() => {
         if (!pattern || !testString) return 0;
