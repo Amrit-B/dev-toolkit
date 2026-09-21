@@ -27,7 +27,6 @@ export default async function handler(req, res) {
       });
     }
 
-    // THIS IS THE CRITICAL LINE: Ensure it sends the JSON back to your frontend
     return res.status(200).json(data);
 
   } catch (error) {
