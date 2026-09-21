@@ -12,26 +12,35 @@ export default async function handler(req, res) {
   }
 
   try {
-    let body = req.body;
-    if (typeof body === 'string') {
-      try {
-        body = JSON.parse(body);
-      } catch (e) {
-        body = {};
-      }
+    // Manually read the raw body stream if Vercel hasn't parsed it yet
+    let rawBody = '';
+    if (typeof req.body === 'string') {
+      rawBody = req.body;
+    } else if (req.body) {
+      rawBody = JSON.stringify(req.body);
+    } else {
+      // Fallback for raw Node request streams
+      rawBody = await new Promise((resolve) => {
+        let data = '';
+        req.on('data', chunk => { data += chunk; });
+        req.on('end', () => resolve(data));
+      });
     }
 
+    const body = rawBody ? JSON.parse(rawBody) : {};
     const prompt = body?.prompt;
+
     if (!prompt) {
       return res.status(400).json({ error: 'Missing prompt in request body' });
     }
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      return res.status(500).json({ error: 'GEMINI_API_KEY is not defined in Vercel settings' });
+      return res.status(500).json({ error: 'GEMINI_API_KEY is not defined in Vercel environment variables.' });
     }
 
-    const apiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+    // Updated to a valid, stable Gemini model endpoint
+    const apiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
